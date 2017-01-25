@@ -46,7 +46,7 @@
     };
 
     var colors = ['red', 'blue', 'green', 'yellow', 'lime', 'orange', 'deepskyblue', 'gray', 'coral', 'fuchsia'],
-            pi2 = Math.PI * 2;
+        pi2 = Math.PI * 2;
 
     var x = 44, y = 44;
 
@@ -83,8 +83,8 @@
             var r = ya + (this.population - xa) * ((yb - ya) / (xb - xa));
 
             var radiusMarker = Math.min(r, 21),
-                    radiusCenter = 11,
-                    center = width / 2;
+                radiusCenter = 11,
+                center = width / 2;
 
             if (L.Browser.retina) {
                 canvas.scale(2, 2);
@@ -106,7 +106,7 @@
                     canvas.moveTo(center, center);
                     canvas.fillStyle = colors[i];
                     var from = start + 0.14,
-                            to = start + size * pi2;
+                        to = start + size * pi2;
 
                     if (to < from || size == 1) {
                         from = start;
@@ -116,7 +116,7 @@
                     start = start + size * pi2;
                     canvas.lineTo(center, center);
                     canvas.fill();
-                    if(stroke){
+                    if (stroke) {
                         canvas.stroke();
                     }
                     canvas.closePath();
@@ -124,7 +124,7 @@
                 }
             }
 
-            if(!stroke){
+            if (!stroke) {
                 canvas.beginPath();
                 canvas.arc(center, center, radiusMarker, 0, pi2);
                 canvas.stroke();
@@ -135,9 +135,50 @@
             canvas.fillStyle = 'white';
             canvas.moveTo(center, center);
             canvas.arc(center, center, radiusCenter, 0, pi2);
-            
+            canvas.fill();
+            canvas.closePath();
+
+            canvas.fillStyle = '#454545';
+            canvas.textAlign = 'center';
+            canvas.textBaseline = 'middle';
+            canvas.font = 'bold ' + (this.population < 100 ? '12' : (this.population < 1000 ? '11' : '9')) + 'px sans-serif';
+
+            canvas.fillText(this.population, center, center, radiusCenter * 2);
         }
-    })
+    });
+
+    for (var i = 0; i < addressPoints.length; i++) {
+        var m = new PruneCluster.Marker(
+            addressPoints[i][0],
+            addressPoints[i][1],
+            {
+                title: addressPoints[i][2]
+            },
+            /^\d+$/.test(addressPoints[i][2]) ? 5 : 1
+        );
+        leafletView.RegisterMarker(m);
+    }
+    for (var i = 0; i < addressPoints2.length; i++) {
+        var m2 = new PruneCluster.Marker(
+            addressPoints2[i][0],
+            addressPoints2[i][1],
+            {
+                title: addressPoints[i][2]
+            },
+            /^\d+$/.test(addressPoints[i][2]) ? 3 : 0
+        );
+        leafletView.RegisterMarker(m2);
+    }
+
+    leafletView.PrepareLeafletMarker = function (marker, data, category) {
+        if (marker.getPopup()) {
+            marker.setPopupContent(data.title + " - " + category);
+        } else {
+            marker.bindPopup(data.title + " - " + category);
+        }
+    }
+
+    map.addLayer(leafletView);
 
 </script>
 
