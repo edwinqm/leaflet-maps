@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>directionsCreateWalkingRouteHTML</title>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+</head>
+<body>
+<div id='printoutPanel'></div>
+
+<div id='myMap' style='width: 100vw; height: 100vh;'></div>
+<script type='text/javascript'>
+    function loadMapScenario() {
+        var map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+            credentials: 'Ao-KYN8TUTj25rez2768EspjWu8IUsX-iK_HJdJjsEFKyQWuCjcEZD1x8TnFkkS4',
+            center: new Microsoft.Maps.Location(-17.770856, -63.192141),
+            zoom: 12
+        });
+        Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
+            var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+            // Set Route Mode to walking
+            directionsManager.setRequestOptions({ routeMode: Microsoft.Maps.Directions.RouteMode.walking });
+            var waypoint1 = new Microsoft.Maps.Directions.Waypoint({ address: 'Cotoca' });
+            var waypoint2 = new Microsoft.Maps.Directions.Waypoint({ address: 'Warnes' });
+            directionsManager.addWaypoint(waypoint1);
+            directionsManager.addWaypoint(waypoint2);
+            // Set the element in which the itinerary will be rendered
+            directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('printoutPanel') });
+            directionsManager.calculateDirections();
+        });
+
+    }
+</script>
+<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?branch=experimental&callback=loadMapScenario' async defer></script>
+</body>
+</html>

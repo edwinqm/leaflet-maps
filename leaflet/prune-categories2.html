@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PruneCategories2</title>
+
+    <link rel="stylesheet" href="css/leaflet-1.0.3.css">
+    <link rel="stylesheet" href="css/LeafletStyleSheet.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="js/leaflet-src-1.0.3.js"></script>
+    <script src="js/PruneCluster.js"></script>
+
+    <script src="data/realworld.50000.1.js"></script>
+    <script src="data/realworld.50000.2.js"></script>
+
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    var lat = -37.79, lng = 175.27;
+
+    var map = L.map('map', {
+        attributionControl: false,
+        zoomControl: false
+    });
+    map.setView(L.latLng(lat, lng), 12);
+
+    var tileLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        detectRetina: true,
+        maxNativeZoom: 17
+    });
+    tileLayer.addTo(map);
+
+    var leafletView = new PruneClusterForLeaflet();
+
+    leafletView.BuildLeafletClusterIcon = function (cluster) {
+        var markerIcon = new L.Icon.MyMarkerCluster();
+
+        markerIcon.stats = cluster.stats;
+        markerIcon.population = cluster.population;
+
+        return markerIcon;
+    };
+
+    var colors = ['red', 'blue', 'green', 'yellow', 'lime', 'orange', 'deepskyblue', 'gray', 'coral', 'fuchsia'],
+            pi2 = Math.PI * 2;
+
+    var x = 44, y = 44;
+
+    L.Icon.MyMarkerCluster = L.Icon.extend({
+        options: {
+            iconSize: new L.Point(x, y),
+            className: 'prunecluster leaflet-markercluster-icon'
+        },
+        createIcon: function () {
+            // based on L.Icon.Canvas from shramov/leaflet-plugins (BSD licence)
+            var canvas = document.createElement('canvas');
+            this._setIconStyles(canvas, 'icon');
+            var size = this.options.iconSize;
+
+            if (L.Browser.retina) {
+                canvas.width = size.x + size.x;
+                canvas.height = size.y + size.y;
+            } else {
+                canvas.width = size.x;
+                canvas.height = size.y;
+            }
+
+            // this.draw(canvas.getContext('2d'), size.x, size.y);
+            this.draw(canvas.getContext('2d'), canvas.width, canvas.height);
+
+            return canvas;
+        },
+        createShadow: function () {
+            return null;
+        },
+        draw: function (canvas, width, height) {
+            var xa = 2, xb = 50, ya = 18, yb = 21;
+
+            var r = ya + (this.population - xa) * ((yb - ya) / (xb - xa));
+
+            var radiusMarker = Math.min(r, 21),
+                    radiusCenter = 11,
+                    center = width / 2;
+
+            if (L.Browser.retina) {
+                canvas.scale(2, 2);
+                center /= 2;
+                canvas.lineWidth = 0.5;
+            }
+
+            canvas.strokeStyle = 'rgba(0,0,0,0.25)';
+
+            var start = 0, stroke = true;
+
+            for (var i = 0; i < colors.length; ++i) {
+                var size = this.stats[i] / this.population;
+
+                if (size > 0) {
+                    stroke = size != 1;
+
+                    canvas.beginPath();
+                    canvas.moveTo(center, center);
+                    canvas.fillStyle = colors[i];
+                    var from = start + 0.14,
+                            to = start + size * pi2;
+
+                    if (to < from || size == 1) {
+                        from = start;
+                    }
+                    canvas.arc(center, center, radiusMarker, from, to);
+
+                    start = start + size * pi2;
+                    canvas.lineTo(center, center);
+                    canvas.fill();
+                    if(stroke){
+                        canvas.stroke();
+                    }
+                    canvas.closePath();
+
+                }
+            }
+
+            if(!stroke){
+                canvas.beginPath();
+                canvas.arc(center, center, radiusMarker, 0, pi2);
+                canvas.stroke();
+                canvas.closePath();
+            }
+
+            canvas.beginPath();
+            canvas.fillStyle = 'white';
+            canvas.moveTo(center, center);
+            canvas.arc(center, center, radiusCenter, 0, pi2);
+            
+        }
+    })
+
+</script>
+
+</body>
+</html>

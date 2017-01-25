@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plain Leaflet API</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+    <script src='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.css' rel='stylesheet'/>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    var wlat = -17.770856, wlng = -63.192141;
+    var vwpoint = [-17.770856, -63.192141];
+
+    var hlat = -17.810681, hlng = -63.122576;
+
+    L.mapbox.accessToken = 'pk.eyJ1IjoibWFwYm94LWVxbSIsImEiOiJjaXkzaWN0c20wMDAyMzNwOWhvMXJzOWc2In0.Kf4xCA2xhLuWj-oYdqQSAQ';
+
+    // Replace 'mapbox.streets' with your map id
+    var mapboxTiles = L.tileLayer(
+            'https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=' + L.mapbox.accessToken,
+            {
+                attribution: '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }
+    );
+
+    var map = L.map('map')
+            .addLayer(mapboxTiles)
+            .setView([wlat, wlng], 15);
+
+</script>
+
+</body>
+</html>
